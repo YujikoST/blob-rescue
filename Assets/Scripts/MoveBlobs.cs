@@ -7,7 +7,7 @@ public static class Helpers
 {
     // -- The juicy stuff --
 
-    static float GrowBlob(GameObject blob, float eatedArea)
+    public static float GrowBlob(GameObject blob, float eatedArea)
     {
         var blobArea = GetBlobArea(blob);
         var newArea = blobArea + eatedArea;
@@ -20,7 +20,7 @@ public static class Helpers
         return difference;
     }
 
-    static float ShrinkBlob(GameObject blob, float shrinkedArea)
+    public static float ShrinkBlob(GameObject blob, float shrinkedArea)
     {
         var blobArea = GetBlobArea(blob);
         var newArea = blobArea - shrinkedArea;
@@ -37,7 +37,7 @@ public static class Helpers
         return difference;
     }
 
-    static readonly Func<GameObject, Func<int, List<GameObject>>>
+    public static readonly Func<GameObject, Func<int, List<GameObject>>>
         CreatePool = gameObject => amount =>
             Enumerable
                 .Repeat(0, amount)
@@ -48,23 +48,23 @@ public static class Helpers
     // -- helper functions and data --
 
 
-    static readonly float DEFAULT_Z = 0;
-    static readonly float MIN_BLOB_AREA = 0.5f;
+    private static readonly float DEFAULT_Z = 0;
+    private static readonly float MIN_BLOB_AREA = 0.5f;
 
-    static readonly Func<float, float>
+    private static readonly Func<float, float>
         GetArea = diameter =>
             Mathf.PI * Mathf.Pow(diameter / 2, 2);
 
-    static readonly Func<GameObject, float>
+    private static readonly Func<GameObject, float>
         GetBlobArea = blob =>
             GetArea(blob.transform.localScale.x);
 
-    static readonly Func<float, float>
+    private static readonly Func<float, float>
         GetDiameter = area =>
             Mathf.Sqrt(area / Mathf.PI) * 2;
 
 
-    static readonly Func<GameObject, Func<int, GameObject>>
+    private static readonly Func<GameObject, Func<int, GameObject>>
         InstantiateUnactive = gameObject => _ =>
         {
             var instance = UnityEngine.Object.Instantiate(gameObject);
