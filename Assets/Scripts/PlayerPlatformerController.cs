@@ -29,7 +29,7 @@ public class PlayerPlatformerController : PhysicsObject
         _animator = GetComponent<Animator>();
         
     }
-    
+
     protected override void ComputeVelocity()
     {
         
@@ -60,6 +60,7 @@ public class PlayerPlatformerController : PhysicsObject
         {
             _spriteRenderer.flipX = !_spriteRenderer.flipX;
         }
+
         
         _animator.SetBool(Grounded, grounded);
         _animator.SetFloat(VelocityX, Mathf.Abs(velocity.x) / maxSpeed);
