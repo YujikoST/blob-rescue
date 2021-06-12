@@ -13,7 +13,7 @@ public class PhysicsObject : MonoBehaviour
     protected Vector2 groundNormal;
     protected bool grounded;
     protected Rigidbody2D rb2d;
-    protected Vector2 velocity;
+    public Vector2 velocity;
     protected const float minMoveDistance = 0.001f;
     protected ContactFilter2D contactFilter;
     protected RaycastHit2D[] hitBuffer = new RaycastHit2D[16];

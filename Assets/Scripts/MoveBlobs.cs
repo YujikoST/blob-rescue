@@ -36,6 +36,18 @@ public static class Helpers
                 .Repeat(0, amount)
                 .Select(InstantiateUnactive(gameObject))
                 .ToList();
+    
+    public static void HandleJump(PhysicsObject blob, bool canJump, float jumpSpeed, float scaleToStopJump)
+    {
+        if (WantsToJump() && canJump)
+        {
+            Jump(blob, jumpSpeed);
+        }
+        else if (WantsToStopJump() && !IsJumping(blob))
+        {
+            StopJump(blob, scaleToStopJump);
+        }
+    }
 
 
     // -- helper functions and data --
@@ -75,4 +87,29 @@ public static class Helpers
             var diameterDifference = currentDiameter - newDiameter;
             return diameterDifference;
         };
+    
+    
+    private static readonly Func<bool>
+        WantsToJump = () =>
+            Input.GetButtonDown("Jump");
+
+    private static readonly Func<bool>
+        WantsToStopJump = () =>
+            Input.GetButtonUp("Jump");
+
+    private static readonly Func<PhysicsObject, bool>
+        IsJumping = blob =>
+            blob.velocity.y <= 0;
+
+    private static void Jump(PhysicsObject blob, float speed)
+    {
+        blob.velocity.y = speed;
+    }
+
+    private static void StopJump(PhysicsObject blob, float scale)
+    {
+        blob.velocity.y *= scale;
+    }
+
+    
 }
