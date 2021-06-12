@@ -36,6 +36,7 @@ public class PlayerPlatformerController : PhysicsObject
         Vector2 move = Vector2.zero;
 
         move.x = Input.GetAxisRaw("Horizontal");
+        var shouldFlipSprite = ShouldFlipSprite(move.x);
 
         if (Input.GetButtonDown("Jump") && grounded)
         {
@@ -54,11 +55,9 @@ public class PlayerPlatformerController : PhysicsObject
         _isJumping = velocity.y > 0 && grounded;
         _isLanding = velocity.y < -0.1 && grounded;
         
-        var flipSprite = (_spriteRenderer.flipX ? (move.x < 0f) : (move.x > 0f));
-
-        if (flipSprite)
+        if (shouldFlipSprite(_spriteRenderer))
         {
-            _spriteRenderer.flipX = !_spriteRenderer.flipX;
+           FlipSprite(_spriteRenderer);
         }
 
         
@@ -70,5 +69,16 @@ public class PlayerPlatformerController : PhysicsObject
         _animator.SetBool(IsLanding, _isLanding);
         
         targetVelocity = move * maxSpeed;
+    }
+    
+    static readonly Func<float, Func<SpriteRenderer, bool>>
+        ShouldFlipSprite = horizontalDirection => spriteRenderer =>
+            spriteRenderer.flipX
+                ? horizontalDirection < 0f 
+                : horizontalDirection > 0f;
+
+    static void FlipSprite(SpriteRenderer sprite)
+    {
+        sprite.flipX = !sprite.flipX;
     }
 }
