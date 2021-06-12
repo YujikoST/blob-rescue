@@ -11,14 +11,18 @@ public class PlayerPlatformerController : PhysicsObject
     private SpriteRenderer _spriteRenderer;
     private Animator _animator;
     private bool _isRising;
+
     private bool _isFalling;
-    private bool _isJumping;
+
+    // private bool _isJumping;
     private bool _isLanding;
 
     private static readonly int IsRising = Animator.StringToHash("isRising");
     private static readonly int VelocityX = Animator.StringToHash("velocityX");
+
     private static readonly int Grounded = Animator.StringToHash("grounded");
-    private static readonly int IsJumping = Animator.StringToHash("isJumping");
+
+    // private static readonly int IsJumping = Animator.StringToHash("isJumping");
     private static readonly int IsFalling = Animator.StringToHash("isFalling");
     private static readonly int IsLanding = Animator.StringToHash("isLanding");
 
@@ -31,32 +35,14 @@ public class PlayerPlatformerController : PhysicsObject
 
     protected override void ComputeVelocity()
     {
-        // React to jump button
-        if (Input.GetButtonDown("Jump") && grounded)
-        {
-            velocity.y = jumpTakeOffSpeed;
-        }
-        else if (Input.GetButtonUp("Jump"))
-        {
-            if (velocity.y > 0)
-            {
-                velocity.y *= .35f;
-            }
-        }
+        Helpers.HandleJump(this, grounded, jumpTakeOffSpeed, 0.35f);
 
-        // React to changes in horizontal direction
-        var horizontalDirection = Input.GetAxisRaw("Horizontal");
-        targetVelocity = new Vector2(horizontalDirection * maxSpeed, 0);
-
-        if (ShouldFlipSprite(horizontalDirection)(_spriteRenderer))
-        {
-            FlipSprite(_spriteRenderer);
-        }
+        Helpers.HandleHorizontalMovement(this, _spriteRenderer, maxSpeed);
 
         // Calculate booleans
         _isRising = velocity.y > 0.1;
         _isFalling = velocity.y < -0.1;
-        _isJumping = velocity.y > 0 && grounded;
+        // _isJumping = velocity.y > 0 && grounded;
         _isLanding = velocity.y < -0.1 && grounded;
 
         // Set values in animator
@@ -64,18 +50,7 @@ public class PlayerPlatformerController : PhysicsObject
         _animator.SetFloat(VelocityX, Mathf.Abs(velocity.x) / maxSpeed);
         _animator.SetBool(IsRising, _isRising);
         _animator.SetBool(IsFalling, _isFalling);
-        _animator.SetBool(IsJumping, _isJumping);
+        // _animator.SetBool(IsJumping, _isJumping);
         _animator.SetBool(IsLanding, _isLanding);
-    }
-
-    static readonly Func<float, Func<SpriteRenderer, bool>>
-        ShouldFlipSprite = horizontalDirection => spriteRenderer =>
-            spriteRenderer.flipX
-                ? horizontalDirection < 0f
-                : horizontalDirection > 0f;
-
-    static void FlipSprite(SpriteRenderer sprite)
-    {
-        sprite.flipX = !sprite.flipX;
     }
 }
