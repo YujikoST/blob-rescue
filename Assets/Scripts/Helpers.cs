@@ -6,7 +6,7 @@ using UnityEngine;
 public static class Helpers
 {
     // -- The juicy stuff --
-    
+
     static float GrowBlob(GameObject blob, float eatedArea)
     {
         var blobArea = GetBlobArea(blob);
@@ -43,14 +43,14 @@ public static class Helpers
                 .Repeat(0, amount)
                 .Select(InstantiateUnactive(gameObject))
                 .ToList();
-    
-    
+
+
     // -- helper functions and data --
-    
-    
+
+
     static readonly float DEFAULT_Z = 0;
     static readonly float MIN_BLOB_AREA = 0.5f;
-    
+
     static readonly Func<float, float>
         GetArea = diameter =>
             Mathf.PI * Mathf.Pow(diameter / 2, 2);
