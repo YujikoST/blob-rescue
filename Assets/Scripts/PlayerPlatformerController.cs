@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerPlatformerController : PhysicsObject
@@ -89,5 +90,23 @@ public class PlayerPlatformerController : PhysicsObject
 
         blob.transform.localScale = new Vector3(diameter, diameter, DEFAULT_Z);
         return difference;
+    }
+
+    static List<GameObject> CreatePool(GameObject gameObject, int amount)
+    {
+        return Enumerable
+            .Repeat(0, amount)
+            .Select(InstantiateUnactive(gameObject))
+            .ToList();
+    }
+
+    static Func<int, GameObject> InstantiateUnactive(GameObject gameObject)
+    {
+        return _ =>
+        {
+            var instance = Instantiate(gameObject);
+            instance.SetActive(false);
+            return instance;
+        };
     }
 }
