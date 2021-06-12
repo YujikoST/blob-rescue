@@ -50,6 +50,7 @@ public class PhysicsObject : MonoBehaviour
         
         grounded = false;
         
+        
         Vector2 deltaPosition = velocity * Time.deltaTime;
 
         Vector2 moveAlongGround = new Vector2(groundNormal.y, -groundNormal.x);
