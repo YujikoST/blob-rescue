@@ -83,7 +83,7 @@ public class PhysicsObject : MonoBehaviour
                 }
 
                 float modifiedDistance = hitBufferList[i].distance - shellRadius;
-                distance = modifiedDistance < distance ? modifiedDistance : distance;
+                distance = Math.Min(distance, modifiedDistance);
             }
         }
         
