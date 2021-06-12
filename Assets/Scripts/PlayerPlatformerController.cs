@@ -51,20 +51,22 @@ public class PlayerPlatformerController : PhysicsObject
         targetVelocity = move * maxSpeed;
     }
 
-    static float GetArea(GameObject blob)
-    {
-        var diameter = blob.transform.localScale.x;
-        return Mathf.PI * Mathf.Pow(diameter / 2, 2);
-    }
+    static readonly Func<float, float>
+        GetArea = diameter =>
+            Mathf.PI * Mathf.Pow(diameter / 2, 2);
 
-    static float GetDiameter(float area)
-    {
-        return Mathf.Sqrt(area / Mathf.PI) * 2;
-    }
+    static readonly Func<GameObject, float>
+        GetBlobArea = blob =>
+            GetArea(blob.transform.localScale.x);
+
+    static readonly Func<float, float>
+        GetDiameter = area =>
+            Mathf.Sqrt(area / Mathf.PI) * 2;
+
 
     static float GrowBlob(GameObject blob, float eatedArea)
     {
-        var blobArea = GetArea(blob);
+        var blobArea = GetBlobArea(blob);
         var newArea = blobArea + eatedArea;
 
         var diameter = GetDiameter(newArea);
@@ -77,7 +79,7 @@ public class PlayerPlatformerController : PhysicsObject
 
     static float ShrinkBlob(GameObject blob, float shrinkedArea)
     {
-        var blobArea = GetArea(blob);
+        var blobArea = GetBlobArea(blob);
         var newArea = blobArea - shrinkedArea;
 
         if (newArea < MIN_BLOB_AREA)
@@ -92,21 +94,19 @@ public class PlayerPlatformerController : PhysicsObject
         return difference;
     }
 
-    static List<GameObject> CreatePool(GameObject gameObject, int amount)
-    {
-        return Enumerable
-            .Repeat(0, amount)
-            .Select(InstantiateUnactive(gameObject))
-            .ToList();
-    }
+    static readonly Func<GameObject, Func<int, List<GameObject>>>
+        CreatePool = gameObject => amount =>
+            Enumerable
+                .Repeat(0, amount)
+                .Select(InstantiateUnactive(gameObject))
+                .ToList();
 
-    static Func<int, GameObject> InstantiateUnactive(GameObject gameObject)
-    {
-        return _ =>
+
+    static readonly Func<GameObject, Func<int, GameObject>>
+        InstantiateUnactive = gameObject => _ =>
         {
             var instance = Instantiate(gameObject);
             instance.SetActive(false);
             return instance;
         };
-    }
 }
