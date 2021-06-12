@@ -9,17 +9,18 @@ public class PlayerPlatformerController : PhysicsObject
     public float jumpTakeOffSpeed = 5;
 
     public const float DEFAULT_Z = 0;
+    public const float MIN_BLOB_AREA = 0.5f;
 
     private SpriteRenderer _spriteRenderer;
     private Animator _animator;
-    
+
     // Start is called before the first frame update
     void Awake()
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _animator = GetComponent<Animator>();
     }
-    
+
     protected override void ComputeVelocity()
     {
         Vector2 move = Vector2.zero;
@@ -44,8 +45,8 @@ public class PlayerPlatformerController : PhysicsObject
         {
             _spriteRenderer.flipX = !_spriteRenderer.flipX;
         }
-        
-        
+
+
         targetVelocity = move * maxSpeed;
     }
 
@@ -63,5 +64,20 @@ public class PlayerPlatformerController : PhysicsObject
         var diameter = Mathf.Sqrt(newArea / Mathf.PI) * 2;
 
         blob.transform.localScale = new Vector3(diameter, diameter, DEFAULT_Z);
+    }
+
+    static bool ShrinkBlob(GameObject blob, float shrinkedArea)
+    {
+        var blobArea = GetArea(blob);
+        var newArea = blobArea - shrinkedArea;
+
+        if (newArea < MIN_BLOB_AREA)
+        {
+            return false;
+        }
+
+        var diameter = Mathf.Sqrt(newArea / Mathf.PI) * 2;
+        blob.transform.localScale = new Vector3(diameter, diameter, DEFAULT_Z);
+        return true;
     }
 }
