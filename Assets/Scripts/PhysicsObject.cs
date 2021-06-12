@@ -81,6 +81,18 @@ public class PhysicsObject : MonoBehaviour
                         : normal)
                 .Aggregate(velocity, SlowAccordingToNormal); // Slow down velocity
 
+            try
+            {
+                groundNormal = hitBufferList
+                    .Select(hit => hit.normal)
+                    .Last(normal => IsGrounded(normal) && yMovement);
+            }
+            catch (InvalidOperationException e)
+            {
+                // There's no grounded elements
+            }
+
+
             grounded = hitBufferList
                 .Select(hit => hit.normal)
                 .Any(IsGrounded);
