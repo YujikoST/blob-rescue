@@ -49,6 +49,17 @@ public static class Helpers
         }
     }
 
+    public static void HandleHorizontalMovement(PhysicsObject blob,SpriteRenderer spriteRenderer, float maxSpeed)
+    {
+        var horizontalDirection = Input.GetAxisRaw("Horizontal");
+        blob.targetVelocity = new Vector2(horizontalDirection * maxSpeed, 0);
+
+        if (ShouldFlipSprite(horizontalDirection)(spriteRenderer))
+        {
+            FlipSprite(spriteRenderer);
+        }
+    }
+
 
     // -- helper functions and data --
 
@@ -111,5 +122,15 @@ public static class Helpers
         blob.velocity.y *= scale;
     }
 
+    private static readonly Func<float, Func<SpriteRenderer, bool>>
+        ShouldFlipSprite = horizontalDirection => spriteRenderer =>
+            spriteRenderer.flipX
+                ? horizontalDirection < 0f
+                : horizontalDirection > 0f;
+
+    private static void FlipSprite(SpriteRenderer sprite)
+    {
+        sprite.flipX = !sprite.flipX;
+    }
     
 }

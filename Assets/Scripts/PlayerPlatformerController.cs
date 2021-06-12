@@ -37,14 +37,7 @@ public class PlayerPlatformerController : PhysicsObject
     {
         Helpers.HandleJump(this, grounded, jumpTakeOffSpeed, 0.35f);
 
-        // React to changes in horizontal direction
-        var horizontalDirection = Input.GetAxisRaw("Horizontal");
-        targetVelocity = new Vector2(horizontalDirection * maxSpeed, 0);
-
-        if (ShouldFlipSprite(horizontalDirection)(_spriteRenderer))
-        {
-            FlipSprite(_spriteRenderer);
-        }
+        Helpers.HandleHorizontalMovement(this, _spriteRenderer, maxSpeed);
 
         // Calculate booleans
         _isRising = velocity.y > 0.1;
@@ -59,16 +52,5 @@ public class PlayerPlatformerController : PhysicsObject
         _animator.SetBool(IsFalling, _isFalling);
         // _animator.SetBool(IsJumping, _isJumping);
         _animator.SetBool(IsLanding, _isLanding);
-    }
-
-    static readonly Func<float, Func<SpriteRenderer, bool>>
-        ShouldFlipSprite = horizontalDirection => spriteRenderer =>
-            spriteRenderer.flipX
-                ? horizontalDirection < 0f
-                : horizontalDirection > 0f;
-
-    static void FlipSprite(SpriteRenderer sprite)
-    {
-        sprite.flipX = !sprite.flipX;
     }
 }
