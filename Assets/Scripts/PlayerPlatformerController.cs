@@ -61,28 +61,33 @@ public class PlayerPlatformerController : PhysicsObject
         return Mathf.Sqrt(area / Mathf.PI) * 2;
     }
 
-    static void GrowBlob(GameObject blob, float eatedArea)
+    static float GrowBlob(GameObject blob, float eatedArea)
     {
         var blobArea = GetArea(blob);
         var newArea = blobArea + eatedArea;
 
         var diameter = GetDiameter(newArea);
+        var difference = Mathf.Abs(diameter - blob.transform.localScale.x);
 
         blob.transform.localScale = new Vector3(diameter, diameter, DEFAULT_Z);
+
+        return difference;
     }
 
-    static bool ShrinkBlob(GameObject blob, float shrinkedArea)
+    static float ShrinkBlob(GameObject blob, float shrinkedArea)
     {
         var blobArea = GetArea(blob);
         var newArea = blobArea - shrinkedArea;
 
         if (newArea < MIN_BLOB_AREA)
         {
-            return false;
+            return 0;
         }
 
         var diameter = GetDiameter(newArea);
+        var difference = Mathf.Abs(diameter - blob.transform.localScale.x);
+
         blob.transform.localScale = new Vector3(diameter, diameter, DEFAULT_Z);
-        return true;
+        return difference;
     }
 }
