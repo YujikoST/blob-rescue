@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +7,8 @@ public class PlayerPlatformerController : PhysicsObject
 {
     public float maxSpeed = 5;
     public float jumpTakeOffSpeed = 5;
+
+    public const float DEFAULT_Z = 0;
 
     private SpriteRenderer _spriteRenderer;
     private Animator _animator;
@@ -44,5 +47,21 @@ public class PlayerPlatformerController : PhysicsObject
         
         
         targetVelocity = move * maxSpeed;
+    }
+
+    static float GetArea(GameObject blob)
+    {
+        var diameter = blob.transform.localScale.x;
+        return Mathf.PI * Mathf.Pow(diameter / 2, 2);
+    }
+
+    static void GrowBlob(GameObject blob, float eatedArea)
+    {
+        var blobArea = GetArea(blob);
+        var newArea = blobArea + eatedArea;
+
+        var diameter = Mathf.Sqrt(newArea / Mathf.PI) * 2;
+
+        blob.transform.localScale = new Vector3(diameter, diameter, DEFAULT_Z);
     }
 }
