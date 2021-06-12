@@ -7,7 +7,7 @@ using UnityEngine;
 public class PhysicsObject : MonoBehaviour
 {
     public float minGroundNormalY = .65f;
-    public float gravityModifier = 1f;
+    public float gravityModifier = .89f;
 
     protected Vector2 targetVelocity;
     protected Vector2 groundNormal;
@@ -36,6 +36,12 @@ public class PhysicsObject : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        targetVelocity = Vector2.zero;
+        ComputeVelocity();
+    }
+
+    protected virtual void ComputeVelocity()
+    {
     }
 
     void FixedUpdate()
@@ -45,11 +51,15 @@ public class PhysicsObject : MonoBehaviour
 
         grounded = false;
 
-        Vector2 moveAlongGround = new Vector2(groundNormal.y, -groundNormal.x);
-
         Vector2 deltaPosition = velocity * Time.deltaTime;
 
-        Vector2 move = Vector2.up * deltaPosition.y;
+        Vector2 moveAlongGround = new Vector2(groundNormal.y, -groundNormal.x);
+
+        Vector2 move = moveAlongGround * deltaPosition.x;
+
+        Movement(move, false);
+
+        move = Vector2.up * deltaPosition.y;
 
         Movement(move, true);
     }
@@ -79,7 +89,6 @@ public class PhysicsObject : MonoBehaviour
                 .Select(hit => hit.distance) // to distance
                 .Select(d => d - shellRadius) // to modifiedDistance
                 .Aggregate(distance, Math.Min); // get the minimum distance
-
         }
 
         rb2d.position = rb2d.position + move.normalized * distance;
