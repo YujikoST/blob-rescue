@@ -18,6 +18,8 @@ public class BlobsManager : MonoBehaviour
     private static readonly Color SelectedColor = Helpers.FromRGBA(117, 182, 233, 85);
     private static readonly Color UnselectedColor = Color.white;
     private CinemachineVirtualCamera vcam;
+    public static readonly float MinBlobArea = 0.5f;
+    public static readonly float DefaultBlobArea = 1f;
 
     private void Start()
     {
@@ -86,7 +88,7 @@ public class BlobsManager : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && CanSpit(_currentBlob.gameObject))
         {
             // Get spittedBlob and direction
             var spittedBlob = GetObject();
@@ -94,8 +96,14 @@ public class BlobsManager : MonoBehaviour
             var direction = GetDirectionToMouse(blobPosition);
 
             // Move spittedBlob
-            spittedBlob.transform.position = blobPosition + direction;
-            spittedBlob.GetComponent<PlayerPlatformerController>().MoveAsParable(direction * 10);
+            spittedBlob.transform.position = blobPosition + direction * _currentBlob.transform.localScale.x ;
+            var playerPlatformerController = spittedBlob.GetComponent<PlayerPlatformerController>();
+            playerPlatformerController.grounded = false;
+            playerPlatformerController.MoveAsParable(direction * 10);
+            
+            // Resize blobs
+            ResizeToMini(spittedBlob);
+            Helpers.ShrinkBlob(MinBlobArea)(_currentBlob.gameObject);
         }
         
         FollowPlayer.followBlob(_currentBlob.gameObject, vcam);
@@ -117,13 +125,20 @@ public class BlobsManager : MonoBehaviour
         };
 
     private static Func<GameObject, float>
-        ResizeToOriginal = Helpers.ReplaceBlobArea(1f);
+        ResizeToOriginal = Helpers.ReplaceBlobArea(DefaultBlobArea);
+    
+    private static Func<GameObject, float>
+        ResizeToMini = Helpers.ReplaceBlobArea(MinBlobArea);
 
     private void MarkAsEated(GameObject blob)
     {
         blob.SetActive(false);
         ResizeToOriginal(blob);
     }
+
+    private static Func<GameObject, bool>
+        CanSpit = blob =>
+            Helpers.GetBlobArea(blob) - MinBlobArea >= MinBlobArea;
 
     private List<GameObject> GetEdibleBlobs()
     {

@@ -94,7 +94,7 @@ public static class Helpers
         GetArea = diameter =>
             Mathf.PI * Mathf.Pow(diameter / 2, 2);
 
-    private static readonly Func<GameObject, float>
+    public static readonly Func<GameObject, float>
         GetBlobArea = blob =>
             GetArea(blob.transform.localScale.x);
 
