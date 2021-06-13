@@ -89,9 +89,19 @@ public class BlobsManager : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             var spittedBlob = GetObject();
-            spittedBlob.transform.position = _currentBlob.transform.position + new Vector3(.5f, .5f, 0);
 
-            spittedBlob.GetComponent<PlayerPlatformerController>().MoveAsParable(new Vector2(5, 10));
+            var tempMousePosition = Input.mousePosition;
+            tempMousePosition.z = Camera.main.nearClipPlane;
+
+            var mousePosition = Camera.main.ScreenToWorldPoint(tempMousePosition);
+            var blobPosition = _currentBlob.transform.position;
+            blobPosition.z = 0;
+            mousePosition.z = 0;
+            var direction = Vector3.Normalize(mousePosition - blobPosition);
+            
+            spittedBlob.transform.position = _currentBlob.transform.position + direction;
+
+            spittedBlob.GetComponent<PlayerPlatformerController>().MoveAsParable(direction * 10);
         }
         
         FollowPlayer.followBlob(_currentBlob.gameObject, vcam);
