@@ -88,13 +88,13 @@ public class BlobsManager : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
+            // Get spittedBlob and direction
             var spittedBlob = GetObject();
             var blobPosition = _currentBlob.transform.position;
-            
             var direction = GetDirectionToMouse(blobPosition);
 
+            // Move spittedBlob
             spittedBlob.transform.position = blobPosition + direction;
-
             spittedBlob.GetComponent<PlayerPlatformerController>().MoveAsParable(direction * 10);
         }
         
