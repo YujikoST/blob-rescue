@@ -21,6 +21,8 @@ public class BlobsManager : MonoBehaviour
     public static readonly float MinBlobArea = 0.5f;
     public static readonly float DefaultBlobArea = 1f;
     public static readonly float SpitForce = 9f;
+    private bool _isSpitting = false;
+    public float spitDelay = 1f;
 
     private void Start()
     {
@@ -89,26 +91,34 @@ public class BlobsManager : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonDown(0) && CanSpit(_currentBlob.gameObject))
+        if (Input.GetMouseButtonDown(0) && CanSpit(_currentBlob.gameObject) && !_isSpitting)
         {
-            // Get spittedBlob and direction
-            var spittedBlob = GetObject();
-            var blobPosition = _currentBlob.transform.position;
-            var direction = GetDirectionToMouse(blobPosition);
-
-            // Move spittedBlob
-            spittedBlob.transform.position = blobPosition + direction * _currentBlob.transform.localScale.x ;
-            var playerPlatformerController = spittedBlob.GetComponent<PlayerPlatformerController>();
-            playerPlatformerController.grounded = false;
-            playerPlatformerController.MoveAsParable(direction * SpitForce);
-            
-            // Resize blobs
-            ResizeToMini(spittedBlob);
-            Helpers.ShrinkBlob(MinBlobArea)(_currentBlob.gameObject);
+            StartCoroutine(Spit());
         }
         
         FollowPlayer.followBlob(_currentBlob.gameObject, vcam);
         
+    }
+
+    private IEnumerator Spit()
+    {
+        _isSpitting = true;
+        // Get spittedBlob and direction
+        var spittedBlob = GetObject();
+        var blobPosition = _currentBlob.transform.position;
+        var direction = GetDirectionToMouse(blobPosition);
+
+        // Move spittedBlob
+        spittedBlob.transform.position = blobPosition + direction * _currentBlob.transform.localScale.x ;
+        var playerPlatformerController = spittedBlob.GetComponent<PlayerPlatformerController>();
+        playerPlatformerController.grounded = false;
+        playerPlatformerController.MoveAsParable(direction * SpitForce);
+            
+        // Resize blobs
+        ResizeToMini(spittedBlob);
+        Helpers.ShrinkBlob(MinBlobArea)(_currentBlob.gameObject);
+        yield return new WaitForSeconds(spitDelay);
+        _isSpitting = false;
     }
 
     private static readonly Func<Vector3, Vector3>
