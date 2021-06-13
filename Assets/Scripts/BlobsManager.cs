@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using System.Linq;
 using UnityEditor.U2D.IK;
 using UnityEngine;
@@ -44,16 +45,23 @@ public class BlobsManager : MonoBehaviour
         Helpers.HandleJump(_currentBlob, _currentBlob.grounded, 7, 0.35f);
 
         Helpers.HandleHorizontalMovement(_currentBlob, _currentBlob.spriteRenderer, 5);
-
+        
+         if (Helpers.WantsToEat())
+        {
+            var edibleBlobs = GetEdibleBlobs();
+            Helpers.EatBlobs(_currentBlob.gameObject, edibleBlobs);
+            edibleBlobs.ForEach(MarkAsEated);
+        }
+        
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             var activeBlobsIndex = pool.IndexOf(_currentBlob.gameObject);
             
             var selectableBlob =
                 pool
-                .Skip(activeBlobsIndex)
-                .Union(pool.Take(activeBlobsIndex))
-                .FirstOrDefault(CanBeSelected);
+                    .Skip(activeBlobsIndex)
+                    .Union(pool.Take(activeBlobsIndex))
+                    .FirstOrDefault(CanBeSelected);
 
             if (selectableBlob != null)
             {
@@ -66,8 +74,24 @@ public class BlobsManager : MonoBehaviour
                 _currentBlob.GetComponent<SpriteRenderer>().color = Color.cyan;
             }
         }
+
     }
 
+    private void MarkAsEated(GameObject blob)
+    {
+        blob.SetActive(false);
+    }
+
+    private List<GameObject> GetEdibleBlobs()
+    {
+        float minDistance = 2f;
+        var distanceToCurrent = Helpers.GetDistance(_currentBlob.gameObject);
+        return pool
+            .Where(CanBeSelected)
+            .Where((blob) => distanceToCurrent(blob) < minDistance)
+            .ToList();
+    }
+    
     private bool CanBeSelected(GameObject blob)
     {
         return !blob.GetComponent<PlayerPlatformerController>().Equals(_currentBlob) && blob.activeSelf;

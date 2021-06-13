@@ -60,9 +60,29 @@ public static class Helpers
         }
     }
 
+    public static void EatBlobs(GameObject selectedBlob, List<GameObject> edibleBlobs)
+    {
+        var gainedArea = edibleBlobs
+            .Select(GetBlobArea)
+            .Sum();
+        
+        GrowBlob(gainedArea)(selectedBlob);
+    }
+    
+    public static readonly Func<GameObject, Func<GameObject, float>>
+        GetDistance = blob1 => blob2 =>
+            Vector3.Distance(blob1.transform.position, blob2.transform.position);
 
+    public static readonly Func<bool>
+        WantsToEat = () =>
+            Input.GetKey("e");
+    
     // -- helper functions and data --
 
+    private static Predicate<T> Not<T>(Predicate<T> predicate)
+    {
+        return v => !predicate(v);
+    }
 
     private static readonly float DEFAULT_Z = 0;
     private static readonly float MIN_BLOB_AREA = 0.5f;
@@ -92,8 +112,9 @@ public static class Helpers
         ReplaceBlobArea = newArea => blob =>
         {
             var newDiameter = GetDiameter(newArea);
-            var currentDiameter = blob.transform.localScale.x;
-            blob.transform.localScale = new Vector3(newDiameter, newDiameter, DEFAULT_Z);
+            var transform = blob.transform;
+            var currentDiameter = transform.localScale.x;
+            transform.localScale = new Vector3(newDiameter, newDiameter, DEFAULT_Z);
             
             var diameterDifference = currentDiameter - newDiameter;
             return diameterDifference;
