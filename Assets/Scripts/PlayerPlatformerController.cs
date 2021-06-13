@@ -8,6 +8,10 @@ public class PlayerPlatformerController : PhysicsObject
     public float maxSpeed = 5;
     public float jumpTakeOffSpeed = 5;
 
+    private bool shouldMoveAsParable = false;
+    private float currentVerticalVelocity;
+    private float horizontalVelocity;
+
     public SpriteRenderer spriteRenderer;
     public Animator _animator;
     private bool _isRising;
@@ -32,6 +36,18 @@ public class PlayerPlatformerController : PhysicsObject
         _animator = GetComponent<Animator>();
     }
 
+    public void MoveAsParable(Vector2 impulse)
+    {
+        shouldMoveAsParable = true;
+        currentVerticalVelocity = impulse.y;
+        horizontalVelocity = impulse.x;
+    }
+
+    public void CancelParableMovement()
+    {
+        shouldMoveAsParable = false;
+    }
+
     protected override void ComputeVelocity()
     {
         // Calculate booleans
@@ -47,6 +63,20 @@ public class PlayerPlatformerController : PhysicsObject
         _animator.SetBool(IsFalling, _isFalling);
         _animator.SetBool(IsJumping, _isJumping);
         _animator.SetBool(IsLanding, _isLanding);
+        
+        // Move as parable
+        if (shouldMoveAsParable)
+        {
+            if (grounded)
+            {
+                shouldMoveAsParable = false;
+                targetVelocity = Vector2.zero;
+                return;
+            }
+            Helpers.Jump(this, currentVerticalVelocity);
+            currentVerticalVelocity -= 0.05f;
+            targetVelocity.x = horizontalVelocity;
+        }
     }
 
     public void TriggerMergingAnimation(bool isMerging)

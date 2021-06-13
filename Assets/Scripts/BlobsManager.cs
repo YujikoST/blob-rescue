@@ -15,18 +15,20 @@ public class BlobsManager : MonoBehaviour
     public int amountToPool = 20;
     private PlayerPlatformerController _currentBlob;
     private List<GameObject> pool;
+    private static readonly Color SelectedColor = Helpers.FromRGBA(117, 182, 233, 85);
+    private static readonly Color UnselectedColor = Color.white;
     private CinemachineVirtualCamera vcam;
 
     private void Start()
     {
         var obj = GameObject.FindGameObjectsWithTag("VCam")[0];
         vcam = obj.GetComponent<CinemachineVirtualCamera>();
-        Debug.Log(vcam);
     }
 
     private void Awake()
     {
         Instance = this;
+        objectToPool.GetComponent<SpriteRenderer>().color = UnselectedColor;
         pool = Helpers.CreatePool(objectToPool)(amountToPool);
         foreach (var obj in pool)
         {
@@ -82,12 +84,30 @@ public class BlobsManager : MonoBehaviour
             {
                 // Deselect current blob
                 _currentBlob.targetVelocity = Vector2.zero;
-                _currentBlob.GetComponent<SpriteRenderer>().color = Color.white;
+                _currentBlob.GetComponent<SpriteRenderer>().color = UnselectedColor;
                     
                 // Select new blob
                 _currentBlob = selectableBlob.GetComponent<PlayerPlatformerController>();
-                _currentBlob.GetComponent<SpriteRenderer>().color = Color.cyan;
+                _currentBlob.GetComponent<SpriteRenderer>().color = SelectedColor;
             }
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            var spittedBlob = GetObject();
+
+            var tempMousePosition = Input.mousePosition;
+            tempMousePosition.z = Camera.main.nearClipPlane;
+
+            var mousePosition = Camera.main.ScreenToWorldPoint(tempMousePosition);
+            var blobPosition = _currentBlob.transform.position;
+            blobPosition.z = 0;
+            mousePosition.z = 0;
+            var direction = Vector3.Normalize(mousePosition - blobPosition);
+            
+            spittedBlob.transform.position = _currentBlob.transform.position + direction;
+
+            spittedBlob.GetComponent<PlayerPlatformerController>().MoveAsParable(direction * 10);
         }
         
         FollowPlayer.followBlob(_currentBlob.gameObject, vcam);
@@ -121,6 +141,7 @@ public class BlobsManager : MonoBehaviour
     public void ChangeCurrentBlob(PlayerPlatformerController blob)
     {
         _currentBlob = blob;
-        _currentBlob.GetComponent<SpriteRenderer>().color = Color.cyan;
+        _currentBlob.GetComponent<SpriteRenderer>().color = SelectedColor;
+        _currentBlob.GetComponent<PlayerPlatformerController>().CancelParableMovement();
     }
 }
