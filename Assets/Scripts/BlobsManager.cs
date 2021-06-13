@@ -20,6 +20,7 @@ public class BlobsManager : MonoBehaviour
     private CinemachineVirtualCamera vcam;
     public static readonly float MinBlobArea = 0.5f;
     public static readonly float DefaultBlobArea = 1f;
+    public static readonly float SpitForce = 9f;
 
     private void Start()
     {
@@ -99,7 +100,7 @@ public class BlobsManager : MonoBehaviour
             spittedBlob.transform.position = blobPosition + direction * _currentBlob.transform.localScale.x ;
             var playerPlatformerController = spittedBlob.GetComponent<PlayerPlatformerController>();
             playerPlatformerController.grounded = false;
-            playerPlatformerController.MoveAsParable(direction * 10);
+            playerPlatformerController.MoveAsParable(direction * SpitForce);
             
             // Resize blobs
             ResizeToMini(spittedBlob);
