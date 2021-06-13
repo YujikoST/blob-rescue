@@ -36,6 +36,9 @@ public static class Helpers
                 .Repeat(0, amount)
                 .Select(InstantiateUnactive(gameObject))
                 .ToList();
+
+    public static readonly Func<float, float, float, float, Color>
+        FromRGBA = (r, g, b, a) => new Color(r / 255, g / 255, b / 255, a / 100);
     
     public static void HandleJump(PhysicsObject blob, bool canJump, float jumpSpeed, float scaleToStopJump)
     {

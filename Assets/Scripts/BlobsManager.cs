@@ -14,10 +14,13 @@ public class BlobsManager : MonoBehaviour
     public int amountToPool = 20;
     private PlayerPlatformerController _currentBlob;
     private List<GameObject> pool;
+    private static readonly Color SelectedColor = Helpers.FromRGBA(117, 182, 233, 85);
+    private static readonly Color UnselectedColor = Color.white;
 
     private void Awake()
     {
         Instance = this;
+        objectToPool.GetComponent<SpriteRenderer>().color = UnselectedColor;
         pool = Helpers.CreatePool(objectToPool)(amountToPool);
         foreach (var obj in pool)
         {
@@ -67,11 +70,11 @@ public class BlobsManager : MonoBehaviour
             {
                 // Deselect current blob
                 _currentBlob.targetVelocity = Vector2.zero;
-                _currentBlob.GetComponent<SpriteRenderer>().color = Color.white;
+                _currentBlob.GetComponent<SpriteRenderer>().color = UnselectedColor;
                     
                 // Select new blob
                 _currentBlob = selectableBlob.GetComponent<PlayerPlatformerController>();
-                _currentBlob.GetComponent<SpriteRenderer>().color = Color.cyan;
+                _currentBlob.GetComponent<SpriteRenderer>().color = SelectedColor;
             }
         }
 
@@ -100,6 +103,6 @@ public class BlobsManager : MonoBehaviour
     public void ChangeCurrentBlob(PlayerPlatformerController blob)
     {
         _currentBlob = blob;
-        _currentBlob.GetComponent<SpriteRenderer>().color = Color.cyan;
+        _currentBlob.GetComponent<SpriteRenderer>().color = SelectedColor;
     }
 }
