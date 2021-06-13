@@ -34,6 +34,6 @@ public class MoveBlobInParable : MonoBehaviour
         Helpers.Jump(blob, currentVerticalVelocity);
         blob.targetVelocity = new Vector2(horizontalVelocity, 0);
 
-        horizontalVelocity = Mathf.Max(0, horizontalVelocity - 0.01f);
+        currentVerticalVelocity = Mathf.Max(0, currentVerticalVelocity - 0.2f);
     }
 }
