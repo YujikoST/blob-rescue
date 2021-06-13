@@ -94,22 +94,31 @@ public class BlobsManager : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonDown(0) && CanSpit(_currentBlob.gameObject))
+        if (Input.GetMouseButtonDown(0))
         {
-            // Get spittedBlob and direction
-            var spittedBlob = GetObject();
-            var blobPosition = _currentBlob.transform.position;
-            var direction = GetDirectionToMouse(blobPosition);
+            _currentBlob.TriggerSpittingAnimation(true);
+        }
 
-            // Move spittedBlob
-            spittedBlob.transform.position = blobPosition + direction * _currentBlob.transform.localScale.x ;
-            var playerPlatformerController = spittedBlob.GetComponent<PlayerPlatformerController>();
-            playerPlatformerController.grounded = false;
-            playerPlatformerController.MoveAsParable(direction * 10);
+        if (Input.GetMouseButtonUp(0))
+        {
+            _currentBlob.TriggerSpittingAnimation(false);
+            if (CanSpit(_currentBlob.gameObject))
+            {
+                // Get spittedBlob and direction
+                var spittedBlob = GetObject();
+                var blobPosition = _currentBlob.transform.position;
+                var direction = GetDirectionToMouse(blobPosition);
+
+                // Move spittedBlob
+                spittedBlob.transform.position = blobPosition + direction * _currentBlob.transform.localScale.x ;
+                var playerPlatformerController = spittedBlob.GetComponent<PlayerPlatformerController>();
+                playerPlatformerController.grounded = false;
+                playerPlatformerController.MoveAsParable(direction * 10);
             
-            // Resize blobs
-            ResizeToMini(spittedBlob);
-            Helpers.ShrinkBlob(MinBlobArea)(_currentBlob.gameObject);
+                // Resize blobs
+                ResizeToMini(spittedBlob);
+                Helpers.ShrinkBlob(MinBlobArea)(_currentBlob.gameObject);
+            }
         }
         
         FollowPlayer.followBlob(_currentBlob.gameObject, vcam);

@@ -83,4 +83,9 @@ public class PlayerPlatformerController : PhysicsObject
     {
         _animator.SetBool("isMerging", isMerging);
     }
+
+    public void TriggerSpittingAnimation(bool isSpitting)
+    {
+        _animator.SetBool("isSpitting", isSpitting);
+    }
 }
