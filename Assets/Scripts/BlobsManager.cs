@@ -88,9 +88,13 @@ public class BlobsManager : MonoBehaviour
         
     }
 
+    private static Func<GameObject, float>
+        ResizeToOriginal = Helpers.ReplaceBlobArea(1f);
+
     private void MarkAsEated(GameObject blob)
     {
         blob.SetActive(false);
+        ResizeToOriginal(blob);
     }
 
     private List<GameObject> GetEdibleBlobs()
