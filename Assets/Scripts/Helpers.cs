@@ -111,7 +111,7 @@ public static class Helpers
             return instance;
         };
 
-    private static readonly Func<float, Func<GameObject, float>>
+    public static readonly Func<float, Func<GameObject, float>>
         ReplaceBlobArea = newArea => blob =>
         {
             var newDiameter = GetDiameter(newArea);

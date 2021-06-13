@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using System.Linq;
+using Cinemachine;
 using UnityEditor.U2D.IK;
 using UnityEngine;
 
@@ -16,6 +17,14 @@ public class BlobsManager : MonoBehaviour
     private List<GameObject> pool;
     private static readonly Color SelectedColor = Helpers.FromRGBA(117, 182, 233, 85);
     private static readonly Color UnselectedColor = Color.white;
+    private CinemachineVirtualCamera vcam;
+
+    private void Start()
+    {
+        var obj = GameObject.FindGameObjectsWithTag("VCam")[0];
+        vcam = obj.GetComponent<CinemachineVirtualCamera>();
+        Debug.Log(vcam);
+    }
 
     private void Awake()
     {
@@ -77,12 +86,18 @@ public class BlobsManager : MonoBehaviour
                 _currentBlob.GetComponent<SpriteRenderer>().color = SelectedColor;
             }
         }
-
+        
+        FollowPlayer.followBlob(_currentBlob.gameObject, vcam);
+        
     }
+
+    private static Func<GameObject, float>
+        ResizeToOriginal = Helpers.ReplaceBlobArea(1f);
 
     private void MarkAsEated(GameObject blob)
     {
         blob.SetActive(false);
+        ResizeToOriginal(blob);
     }
 
     private List<GameObject> GetEdibleBlobs()
