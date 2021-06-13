@@ -9,7 +9,7 @@ public class PlayerPlatformerController : PhysicsObject
     public float jumpTakeOffSpeed = 5;
 
     public SpriteRenderer spriteRenderer;
-    private Animator _animator;
+    public Animator _animator;
     private bool _isRising;
 
     private bool _isFalling;
@@ -25,7 +25,6 @@ public class PlayerPlatformerController : PhysicsObject
     private static readonly int IsJumping = Animator.StringToHash("isJumping");
     private static readonly int IsFalling = Animator.StringToHash("isFalling");
     private static readonly int IsLanding = Animator.StringToHash("isLanding");
-
     // Start is called before the first frame update
     void Awake()
     {
@@ -48,5 +47,10 @@ public class PlayerPlatformerController : PhysicsObject
         _animator.SetBool(IsFalling, _isFalling);
         _animator.SetBool(IsJumping, _isJumping);
         _animator.SetBool(IsLanding, _isLanding);
+    }
+
+    public void TriggerMergingAnimation(bool isMerging)
+    {
+        _animator.SetBool("isMerging", isMerging);
     }
 }

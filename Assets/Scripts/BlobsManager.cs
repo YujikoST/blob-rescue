@@ -57,10 +57,16 @@ public class BlobsManager : MonoBehaviour
         
          if (Helpers.WantsToEat())
         {
+            _currentBlob.TriggerMergingAnimation(true);
             var edibleBlobs = GetEdibleBlobs();
             Helpers.EatBlobs(_currentBlob.gameObject, edibleBlobs);
             edibleBlobs.ForEach(MarkAsEated);
         }
+
+         if (Helpers.WantsToStopEat())
+         {
+             _currentBlob.TriggerMergingAnimation(false);
+         }
         
         if (Input.GetKeyDown(KeyCode.Tab))
         {

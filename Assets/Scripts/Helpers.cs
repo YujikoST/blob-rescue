@@ -75,7 +75,11 @@ public static class Helpers
 
     public static readonly Func<bool>
         WantsToEat = () =>
-            Input.GetKey("e");
+            Input.GetKeyDown("e");
+    
+    public static readonly Func<bool>
+        WantsToStopEat = () =>
+            Input.GetKeyUp("e");
     
     // -- helper functions and data --
 
