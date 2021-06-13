@@ -13,7 +13,7 @@ public class PhysicsObject : MonoBehaviour
     public Vector2 velocity;
     
     protected Vector2 groundNormal;
-    protected bool grounded;
+    public bool grounded;
     protected Rigidbody2D rb2d;
     protected const float minMoveDistance = 0.001f;
     protected ContactFilter2D contactFilter;
@@ -37,7 +37,7 @@ public class PhysicsObject : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        targetVelocity = Vector2.zero;
+        // targetVelocity = Vector2.zero;
         ComputeVelocity();
     }
 

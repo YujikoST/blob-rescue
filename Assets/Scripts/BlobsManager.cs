@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using UnityEditor.U2D.IK;
 using UnityEngine;
 
-public class PoolManager : MonoBehaviour
+public class BlobsManager : MonoBehaviour
 {
-    public static PoolManager Instance;
-    
+    public static BlobsManager Instance;
+    private bool _isReady = false;
+    public bool IsReady { get; private set; }
     public GameObject objectToPool;
     public int amountToPool = 20;
+    private PlayerPlatformerController _currentBlob;
     private List<GameObject> pool;
 
     private void Awake() => Instance = this;
@@ -22,6 +24,7 @@ public class PoolManager : MonoBehaviour
         {
             obj.transform.parent = transform;
         }
+        IsReady = true;
     }
 
     public GameObject GetObject()
@@ -36,4 +39,16 @@ public class PoolManager : MonoBehaviour
         }
         return null;
     }
+    
+    protected void Update()
+    {
+        _currentBlob.targetVelocity = Vector2.zero;
+        Helpers.HandleJump(_currentBlob, _currentBlob.grounded, 7, 0.35f);
+
+        Helpers.HandleHorizontalMovement(_currentBlob, _currentBlob.spriteRenderer, 5);
+
+    }
+
+    public void ChangeCurrentBlob(PlayerPlatformerController blob) => _currentBlob = blob;
+    
 }

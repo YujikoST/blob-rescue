@@ -10,7 +10,7 @@ public class ContainerScript : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Blob"))
         {
-            var obj = PoolManager.Instance.GetObject();
+            var obj = BlobsManager.Instance.GetObject();
             obj.transform.position = transform.position;
             Destroy(gameObject);
         }
