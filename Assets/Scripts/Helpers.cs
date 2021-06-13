@@ -7,7 +7,7 @@ public static class Helpers
 {
     // -- The juicy stuff --
 
-    public static Func<float, Func<GameObject, float>>
+    public static Func<float, Func<PhysicsObject, float>>
         GrowBlob = eatedArea => blob =>
         {
             var blobArea = GetBlobArea(blob);
@@ -16,7 +16,7 @@ public static class Helpers
             return ReplaceBlobArea(newArea)(blob);
         };
 
-    public static Func<float, Func<GameObject, float>>
+    public static Func<float, Func<PhysicsObject, float>>
         ShrinkBlob = shrinkedArea => blob =>
         {
             var blobArea = GetBlobArea(blob);
@@ -60,9 +60,29 @@ public static class Helpers
         }
     }
 
+    public static void EatBlobs(PhysicsObject selectedBlob, List<PhysicsObject> edibleBlobs)
+    {
+        var gainedArea = edibleBlobs
+            .Select(GetBlobArea)
+            .Sum();
+        
+        GrowBlob(gainedArea)(selectedBlob);
+    }
+    
+    public static readonly Func<PhysicsObject, Func<PhysicsObject, float>>
+        GetDistance = blob1 => blob2 =>
+            Vector3.Distance(blob1.transform.position, blob2.transform.position);
 
+    public static readonly Func<bool>
+        WantsToEat = () =>
+            Input.GetKey("e");
+    
     // -- helper functions and data --
 
+    private static Predicate<T> Not<T>(Predicate<T> predicate)
+    {
+        return v => !predicate(v);
+    }
 
     private static readonly float DEFAULT_Z = 0;
     private static readonly float MIN_BLOB_AREA = 0.5f;
@@ -71,7 +91,7 @@ public static class Helpers
         GetArea = diameter =>
             Mathf.PI * Mathf.Pow(diameter / 2, 2);
 
-    private static readonly Func<GameObject, float>
+    private static readonly Func<PhysicsObject, float>
         GetBlobArea = blob =>
             GetArea(blob.transform.localScale.x);
 
@@ -88,12 +108,13 @@ public static class Helpers
             return instance;
         };
 
-    private static readonly Func<float, Func<GameObject, float>>
+    private static readonly Func<float, Func<PhysicsObject, float>>
         ReplaceBlobArea = newArea => blob =>
         {
             var newDiameter = GetDiameter(newArea);
-            var currentDiameter = blob.transform.localScale.x;
-            blob.transform.localScale = new Vector3(newDiameter, newDiameter, DEFAULT_Z);
+            var transform = blob.transform;
+            var currentDiameter = transform.localScale.x;
+            transform.localScale = new Vector3(newDiameter, newDiameter, DEFAULT_Z);
             
             var diameterDifference = currentDiameter - newDiameter;
             return diameterDifference;

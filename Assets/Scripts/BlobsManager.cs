@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEditor.U2D.IK;
 using UnityEngine;
 
@@ -47,8 +48,26 @@ public class BlobsManager : MonoBehaviour
 
         Helpers.HandleHorizontalMovement(_currentBlob, _currentBlob.spriteRenderer, 5);
 
+        if (Helpers.WantsToEat())
+        {
+            var edibleBlobs = GetEdibleBlobs();
+            Helpers.EatBlobs(_currentBlob, edibleBlobs);
+            edibleBlobs.ForEach(MarkAsEated);
+        }
+
     }
 
     public void ChangeCurrentBlob(PlayerPlatformerController blob) => _currentBlob = blob;
+
+    private void MarkAsEated(PhysicsObject blob)
+    {
+        // TODO
+    }
+
+    private List<PhysicsObject> GetEdibleBlobs()
+    {
+        // TODO
+        return new List<PhysicsObject>();
+    }
     
 }
