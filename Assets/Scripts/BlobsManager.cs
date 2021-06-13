@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using System.Linq;
+using Cinemachine;
 using UnityEditor.U2D.IK;
 using UnityEngine;
 
@@ -14,6 +15,14 @@ public class BlobsManager : MonoBehaviour
     public int amountToPool = 20;
     private PlayerPlatformerController _currentBlob;
     private List<GameObject> pool;
+    private CinemachineVirtualCamera vcam;
+
+    private void Start()
+    {
+        var obj = GameObject.FindGameObjectsWithTag("VCam")[0];
+        vcam = obj.GetComponent<CinemachineVirtualCamera>();
+        Debug.Log(vcam);
+    }
 
     private void Awake()
     {
@@ -74,7 +83,9 @@ public class BlobsManager : MonoBehaviour
                 _currentBlob.GetComponent<SpriteRenderer>().color = Color.cyan;
             }
         }
-
+        
+        FollowPlayer.followBlob(_currentBlob.gameObject, vcam);
+        
     }
 
     private void MarkAsEated(GameObject blob)
