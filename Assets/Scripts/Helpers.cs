@@ -136,7 +136,7 @@ public static class Helpers
         IsJumping = blob =>
             blob.velocity.y <= 0;
 
-    private static void Jump(PhysicsObject blob, float speed)
+    public static void Jump(PhysicsObject blob, float speed)
     {
         blob.velocity.y = speed;
     }
