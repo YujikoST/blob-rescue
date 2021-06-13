@@ -69,7 +69,7 @@ public static class Helpers
         GrowBlob(gainedArea)(selectedBlob);
     }
     
-    public static readonly Func<PhysicsObject, Func<PhysicsObject, float>>
+    public static readonly Func<GameObject, Func<GameObject, float>>
         GetDistance = blob1 => blob2 =>
             Vector3.Distance(blob1.transform.position, blob2.transform.position);
 

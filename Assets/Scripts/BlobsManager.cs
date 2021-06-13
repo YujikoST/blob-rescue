@@ -84,8 +84,12 @@ public class BlobsManager : MonoBehaviour
 
     private List<GameObject> GetEdibleBlobs()
     {
-        // TODO
-        return new List<GameObject>();
+        float minDistance = 2f;
+        var distanceToCurrent = Helpers.GetDistance(_currentBlob.gameObject);
+        return pool
+            .Where(CanBeSelected)
+            .Where((blob) => distanceToCurrent(blob) < minDistance)
+            .ToList();
     }
     
     private bool CanBeSelected(GameObject blob)
