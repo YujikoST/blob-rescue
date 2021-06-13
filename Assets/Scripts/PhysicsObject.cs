@@ -12,7 +12,7 @@ public class PhysicsObject : MonoBehaviour
     public Vector2 targetVelocity;
     public Vector2 velocity;
     
-    protected Vector2 groundNormal;
+    protected Vector2 groundNormal = Vector2.up;
     public bool grounded;
     protected Rigidbody2D rb2d;
     protected const float minMoveDistance = 0.001f;
