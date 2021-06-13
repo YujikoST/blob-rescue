@@ -2,31 +2,29 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
+using System.Linq;
 using UnityEditor.U2D.IK;
 using UnityEngine;
 
 public class BlobsManager : MonoBehaviour
 {
     public static BlobsManager Instance;
-    private bool _isReady = false;
     public bool IsReady { get; private set; }
     public GameObject objectToPool;
     public int amountToPool = 20;
     private PlayerPlatformerController _currentBlob;
     private List<GameObject> pool;
 
-    private void Awake() => Instance = this;
-
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
+        Instance = this;
         pool = Helpers.CreatePool(objectToPool)(amountToPool);
         foreach (var obj in pool)
         {
             obj.transform.parent = transform;
         }
         IsReady = true;
-    }
+    } 
 
     public GameObject GetObject()
     {
@@ -47,17 +45,37 @@ public class BlobsManager : MonoBehaviour
         Helpers.HandleJump(_currentBlob, _currentBlob.grounded, 7, 0.35f);
 
         Helpers.HandleHorizontalMovement(_currentBlob, _currentBlob.spriteRenderer, 5);
-
-        if (Helpers.WantsToEat())
+        
+         /* if (Helpers.WantsToEat())
         {
             var edibleBlobs = GetEdibleBlobs();
             Helpers.EatBlobs(_currentBlob, edibleBlobs);
             edibleBlobs.ForEach(MarkAsEated);
+        } */
+        
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            var activeBlobsIndex = pool.IndexOf(_currentBlob.gameObject);
+            
+            var selectableBlob =
+                pool
+                    .Skip(activeBlobsIndex)
+                    .Union(pool.Take(activeBlobsIndex))
+                    .FirstOrDefault(CanBeSelected);
+
+            if (selectableBlob != null)
+            {
+                // Deselect current blob
+                _currentBlob.targetVelocity = Vector2.zero;
+                _currentBlob.GetComponent<SpriteRenderer>().color = Color.white;
+                    
+                // Select new blob
+                _currentBlob = selectableBlob.GetComponent<PlayerPlatformerController>();
+                _currentBlob.GetComponent<SpriteRenderer>().color = Color.cyan;
+            }
         }
 
     }
-
-    public void ChangeCurrentBlob(PlayerPlatformerController blob) => _currentBlob = blob;
 
     private void MarkAsEated(PhysicsObject blob)
     {
@@ -70,4 +88,14 @@ public class BlobsManager : MonoBehaviour
         return new List<PhysicsObject>();
     }
     
+    private bool CanBeSelected(GameObject blob)
+    {
+        return !blob.GetComponent<PlayerPlatformerController>().Equals(_currentBlob) && blob.activeSelf;
+    }
+
+    public void ChangeCurrentBlob(PlayerPlatformerController blob)
+    {
+        _currentBlob = blob;
+        _currentBlob.GetComponent<SpriteRenderer>().color = Color.cyan;
+    }
 }
