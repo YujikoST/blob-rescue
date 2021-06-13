@@ -115,13 +115,12 @@ public class BlobsManager : MonoBehaviour
         {
             var camera = Camera.main;
             
-            var tempMousePosition = Input.mousePosition;
-            tempMousePosition.z = camera.nearClipPlane;
-
-            var mousePosition = camera.ScreenToWorldPoint(tempMousePosition);
-            position.z = 0;
+            var mousePosition = Input.mousePosition;
             mousePosition.z = 0;
-            return Vector3.Normalize(mousePosition - position);
+            var blobPositionInScreen = camera.WorldToScreenPoint(position);
+            blobPositionInScreen.z = 0;
+
+            return Vector3.Normalize(mousePosition - blobPositionInScreen);
         };
 
     private static Func<GameObject, float>
