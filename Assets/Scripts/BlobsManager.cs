@@ -23,7 +23,6 @@ public class BlobsManager : MonoBehaviour
     {
         var obj = GameObject.FindGameObjectsWithTag("VCam")[0];
         vcam = obj.GetComponent<CinemachineVirtualCamera>();
-        Debug.Log(vcam);
     }
 
     private void Awake()
