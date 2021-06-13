@@ -89,17 +89,11 @@ public class BlobsManager : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             var spittedBlob = GetObject();
-
-            var tempMousePosition = Input.mousePosition;
-            tempMousePosition.z = Camera.main.nearClipPlane;
-
-            var mousePosition = Camera.main.ScreenToWorldPoint(tempMousePosition);
             var blobPosition = _currentBlob.transform.position;
-            blobPosition.z = 0;
-            mousePosition.z = 0;
-            var direction = Vector3.Normalize(mousePosition - blobPosition);
             
-            spittedBlob.transform.position = _currentBlob.transform.position + direction;
+            var direction = GetDirectionToMouse(blobPosition);
+
+            spittedBlob.transform.position = blobPosition + direction;
 
             spittedBlob.GetComponent<PlayerPlatformerController>().MoveAsParable(direction * 10);
         }
@@ -107,6 +101,20 @@ public class BlobsManager : MonoBehaviour
         FollowPlayer.followBlob(_currentBlob.gameObject, vcam);
         
     }
+
+    private static readonly Func<Vector3, Vector3>
+        GetDirectionToMouse = position =>
+        {
+            var camera = Camera.main;
+            
+            var tempMousePosition = Input.mousePosition;
+            tempMousePosition.z = camera.nearClipPlane;
+
+            var mousePosition = camera.ScreenToWorldPoint(tempMousePosition);
+            position.z = 0;
+            mousePosition.z = 0;
+            return Vector3.Normalize(mousePosition - position);
+        };
 
     private static Func<GameObject, float>
         ResizeToOriginal = Helpers.ReplaceBlobArea(1f);
