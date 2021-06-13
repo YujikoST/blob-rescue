@@ -91,9 +91,7 @@ public class BlobsManager : MonoBehaviour
             var spittedBlob = GetObject();
             spittedBlob.transform.position = _currentBlob.transform.position + new Vector3(.5f, .5f, 0);
 
-            var parableMover = spittedBlob.AddComponent<MoveBlobInParable>();
-            parableMover.SetBlob(spittedBlob.GetComponent<PhysicsObject>());
-            parableMover.SetInitialDirection(new Vector2(10, 10));
+            spittedBlob.GetComponent<PlayerPlatformerController>().MoveAsParable(new Vector2(5, 10));
         }
         
         FollowPlayer.followBlob(_currentBlob.gameObject, vcam);
@@ -128,5 +126,6 @@ public class BlobsManager : MonoBehaviour
     {
         _currentBlob = blob;
         _currentBlob.GetComponent<SpriteRenderer>().color = SelectedColor;
+        _currentBlob.GetComponent<PlayerPlatformerController>().CancelParableMovement();
     }
 }
