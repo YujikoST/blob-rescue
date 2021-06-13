@@ -88,4 +88,9 @@ public class PlayerPlatformerController : PhysicsObject
     {
         _animator.SetBool("isSpitting", isSpitting);
     }
+
+    public void TriggerLaunchingAnimation(bool isLaunched)
+    {
+        _animator.SetBool("isLaunched", isLaunched);
+    }
 }

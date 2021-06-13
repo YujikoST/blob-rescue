@@ -20,6 +20,9 @@ public class BlobsManager : MonoBehaviour
     private CinemachineVirtualCamera vcam;
     public static readonly float MinBlobArea = 0.5f;
     public static readonly float DefaultBlobArea = 1f;
+    public static readonly float SpitForce = 9f;
+    private bool _isSpitting = false;
+    public float spitDelay = .3f;
 
     private void Start()
     {
@@ -94,7 +97,7 @@ public class BlobsManager : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButton(0))
         {
             _currentBlob.TriggerSpittingAnimation(true);
         }
@@ -104,20 +107,7 @@ public class BlobsManager : MonoBehaviour
             _currentBlob.TriggerSpittingAnimation(false);
             if (CanSpit(_currentBlob.gameObject))
             {
-                // Get spittedBlob and direction
-                var spittedBlob = GetObject();
-                var blobPosition = _currentBlob.transform.position;
-                var direction = GetDirectionToMouse(blobPosition);
-
-                // Move spittedBlob
-                spittedBlob.transform.position = blobPosition + direction * _currentBlob.transform.localScale.x ;
-                var playerPlatformerController = spittedBlob.GetComponent<PlayerPlatformerController>();
-                playerPlatformerController.grounded = false;
-                playerPlatformerController.MoveAsParable(direction * 10);
-            
-                // Resize blobs
-                ResizeToMini(spittedBlob);
-                Helpers.ShrinkBlob(MinBlobArea)(_currentBlob.gameObject);
+                StartCoroutine(Spit());
             }
         }
         
@@ -125,18 +115,48 @@ public class BlobsManager : MonoBehaviour
         
     }
 
+    private IEnumerator Spit()
+    {
+        _isSpitting = true;
+        // Get spittedBlob and direction
+        var spittedBlob = GetObject();
+        var blobPosition = _currentBlob.transform.position;
+        var direction = GetDirectionToMouse(blobPosition);
+
+        // Move spittedBlob
+        spittedBlob.transform.position = blobPosition + direction * _currentBlob.transform.localScale.x ;
+        var playerPlatformerController = spittedBlob.GetComponent<PlayerPlatformerController>();
+        playerPlatformerController.grounded = false;
+        playerPlatformerController.MoveAsParable(direction * SpitForce);
+            
+        // Resize blobs
+        ResizeToMini(spittedBlob);
+        Helpers.ShrinkBlob(MinBlobArea)(_currentBlob.gameObject);
+        
+        Debug.Log(direction.x);
+        if (direction.x < 0)
+        {
+            spittedBlob.GetComponent<SpriteRenderer>().flipX = spittedBlob.GetComponent<SpriteRenderer>().flipX;
+        }
+        
+        spittedBlob.GetComponent<PlayerPlatformerController>().TriggerLaunchingAnimation(true);
+        
+        yield return new WaitForSeconds(spitDelay);
+        spittedBlob.GetComponent<PlayerPlatformerController>().TriggerLaunchingAnimation(false);
+        _isSpitting = false;
+    }
+
     private static readonly Func<Vector3, Vector3>
         GetDirectionToMouse = position =>
         {
             var camera = Camera.main;
             
-            var tempMousePosition = Input.mousePosition;
-            tempMousePosition.z = camera.nearClipPlane;
-
-            var mousePosition = camera.ScreenToWorldPoint(tempMousePosition);
-            position.z = 0;
+            var mousePosition = Input.mousePosition;
             mousePosition.z = 0;
-            return Vector3.Normalize(mousePosition - position);
+            var blobPositionInScreen = camera.WorldToScreenPoint(position);
+            blobPositionInScreen.z = 0;
+
+            return Vector3.Normalize(mousePosition - blobPositionInScreen);
         };
 
     private static Func<GameObject, float>
