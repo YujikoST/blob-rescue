@@ -46,12 +46,12 @@ public class BlobsManager : MonoBehaviour
 
         Helpers.HandleHorizontalMovement(_currentBlob, _currentBlob.spriteRenderer, 5);
         
-         /* if (Helpers.WantsToEat())
+         if (Helpers.WantsToEat())
         {
             var edibleBlobs = GetEdibleBlobs();
-            Helpers.EatBlobs(_currentBlob, edibleBlobs);
+            Helpers.EatBlobs(_currentBlob.gameObject, edibleBlobs);
             edibleBlobs.ForEach(MarkAsEated);
-        } */
+        }
         
         if (Input.GetKeyDown(KeyCode.Tab))
         {
@@ -77,15 +77,15 @@ public class BlobsManager : MonoBehaviour
 
     }
 
-    private void MarkAsEated(PhysicsObject blob)
+    private void MarkAsEated(GameObject blob)
     {
-        // TODO
+        blob.SetActive(false);
     }
 
-    private List<PhysicsObject> GetEdibleBlobs()
+    private List<GameObject> GetEdibleBlobs()
     {
         // TODO
-        return new List<PhysicsObject>();
+        return new List<GameObject>();
     }
     
     private bool CanBeSelected(GameObject blob)

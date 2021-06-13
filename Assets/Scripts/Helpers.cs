@@ -7,7 +7,7 @@ public static class Helpers
 {
     // -- The juicy stuff --
 
-    public static Func<float, Func<PhysicsObject, float>>
+    public static Func<float, Func<GameObject, float>>
         GrowBlob = eatedArea => blob =>
         {
             var blobArea = GetBlobArea(blob);
@@ -16,7 +16,7 @@ public static class Helpers
             return ReplaceBlobArea(newArea)(blob);
         };
 
-    public static Func<float, Func<PhysicsObject, float>>
+    public static Func<float, Func<GameObject, float>>
         ShrinkBlob = shrinkedArea => blob =>
         {
             var blobArea = GetBlobArea(blob);
@@ -60,7 +60,7 @@ public static class Helpers
         }
     }
 
-    public static void EatBlobs(PhysicsObject selectedBlob, List<PhysicsObject> edibleBlobs)
+    public static void EatBlobs(GameObject selectedBlob, List<GameObject> edibleBlobs)
     {
         var gainedArea = edibleBlobs
             .Select(GetBlobArea)
@@ -91,7 +91,7 @@ public static class Helpers
         GetArea = diameter =>
             Mathf.PI * Mathf.Pow(diameter / 2, 2);
 
-    private static readonly Func<PhysicsObject, float>
+    private static readonly Func<GameObject, float>
         GetBlobArea = blob =>
             GetArea(blob.transform.localScale.x);
 
@@ -108,7 +108,7 @@ public static class Helpers
             return instance;
         };
 
-    private static readonly Func<float, Func<PhysicsObject, float>>
+    private static readonly Func<float, Func<GameObject, float>>
         ReplaceBlobArea = newArea => blob =>
         {
             var newDiameter = GetDiameter(newArea);
