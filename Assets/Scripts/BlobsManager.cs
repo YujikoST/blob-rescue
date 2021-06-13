@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.U2D.IK;
 using UnityEngine;
 
@@ -12,11 +13,9 @@ public class BlobsManager : MonoBehaviour
     public int amountToPool = 20;
     private PlayerPlatformerController _currentBlob;
     private List<GameObject> pool;
-    private int activeBlobsIndex;
 
     private void Awake()
     {
-        activeBlobsIndex = 0;
         Instance = this;
         pool = Helpers.CreatePool(objectToPool)(amountToPool);
         foreach (var obj in pool)
@@ -48,40 +47,23 @@ public class BlobsManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            bool blobFound = false;
+            var activeBlobsIndex = pool.IndexOf(_currentBlob.gameObject);
             
-            for (int i = activeBlobsIndex; i < pool.Count; i++)
-            {
-                if (CanBeSelected(pool[i]))
-                {
-                    // Deselect current blob
-                    _currentBlob.targetVelocity = Vector2.zero;
-                    _currentBlob.GetComponent<SpriteRenderer>().color = Color.white;
-                    
-                    // Select new blob
-                    _currentBlob = pool[i].GetComponent<PlayerPlatformerController>();
-                    _currentBlob.GetComponent<SpriteRenderer>().color = Color.cyan;
-                    activeBlobsIndex = i;
-                    blobFound = true;
-                    break;
-                }
-            }
+            var selectableBlob =
+                pool
+                .Skip(activeBlobsIndex)
+                .Union(pool.Take(activeBlobsIndex))
+                .FirstOrDefault(CanBeSelected);
 
-            if (!blobFound)
+            if (selectableBlob != null)
             {
-                for (int i = 0; i < activeBlobsIndex; i++)
-                {
-                    if (!pool[i].GetComponent<PlayerPlatformerController>().Equals(_currentBlob) && pool[i].activeSelf)
-                    { 
-                        _currentBlob.targetVelocity = Vector2.zero;
-                        _currentBlob.GetComponent<SpriteRenderer>().color = Color.white;
-                        _currentBlob = pool[i].GetComponent<PlayerPlatformerController>();
-                        _currentBlob.GetComponent<SpriteRenderer>().color = Color.cyan;
-                        activeBlobsIndex = i;
-                        blobFound = true;
-                        break;
-                    }
-                }
+                // Deselect current blob
+                _currentBlob.targetVelocity = Vector2.zero;
+                _currentBlob.GetComponent<SpriteRenderer>().color = Color.white;
+                    
+                // Select new blob
+                _currentBlob = selectableBlob.GetComponent<PlayerPlatformerController>();
+                _currentBlob.GetComponent<SpriteRenderer>().color = Color.cyan;
             }
         }
     }
